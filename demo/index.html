@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-  <script type="text/javascript" src="../third_party/jquery.min.js" ></script>
-  <script type="text/javascript" src="../engine/worldwind.min.js" ></script>
-  <script type="text/javascript" src="index.js"></script>
-</head>
-<body>
-  <div class="row widget-row" style="margin-top:10px;">
-    <canvas id="canvasOne" width="100%" height="100%">
+  <head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="../third_party/jquery.min.js" ></script>
+    <script type="text/javascript" src="../engine/worldwind.min.js" ></script>
+    <script type="text/javascript" src="../lib/earth.js"></script>
+    <script type="text/javascript" src="../lib/sprite.js"></script>
+  </head>
+  <body>
+    <canvas id="earth_canvas" width=1000 height=800>
       Your browser does not support HTML5 Canvas.
     </canvas>
-  </div>
-</body>
+    <script type="text/javascript">
+      var engine = earth_init(); 
+      var sprite = new Sprite(engine); 
+
+      var image_src = "../img/showdata.png",
+          label = "Placemark",
+          label_color = WorldWind.Color.YELLOW,
+          position = new WorldWind.Position(24.707, 100.092, 1);
+
+      sprite.DrawPlacemark(image_src, position, label, label_color);
+    </script>>
+  </body>
 </html>
