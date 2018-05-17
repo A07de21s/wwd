@@ -22,28 +22,8 @@
           label_color = WorldWind.Color.YELLOW,
           position = new WorldWind.Position(24.707, 100.092, 1);
 
-      sprite.DrawPlacemark(image_src, position, label, label_color);
-
-      var event_alert = function(o)
-      {
-        var x = o.clientX,
-            y = o.clientY;
-        var pickList = engine.pick(engine.canvasCoordinates(x, y));
-        if (pickList.objects.length > 0)
-        {
-          for (var p = 0; p < pickList.objects.length; p++) 
-          {
-            pickList.objects[p].userObject.highlighted = true;
-            console.log(pickList.objects[p]);
-            if (pickList.objects[p].isOnTop &&
-                  pickList.objects[p].isTerrain)
-            {
-               sprite.DrawPlacemark(image_src, pickList.objects[p].position, label, label_color);
-            }
-          }
-        }
-      }
-      engine.addEventListener("mousedown", event_alert);
+      //sprite.DrawPlacemark(image_src, position, label, label_color);
+      sprite.DrawPlacemarkbyClick();
     </script>
   </body>
 </html>
