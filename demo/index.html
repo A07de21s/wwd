@@ -13,7 +13,8 @@
       Your browser does not support HTML5 Canvas.
     </canvas>
     <script type="text/javascript">
-      var engine = earth_init(); 
+      var earth = new Earth("earth_canvas");
+      var engine = earth.Init();
       var sprite = new Sprite(engine); 
 
       var image_src = "../img/showdata.png",
@@ -22,6 +23,27 @@
           position = new WorldWind.Position(24.707, 100.092, 1);
 
       sprite.DrawPlacemark(image_src, position, label, label_color);
-    </script>>
+
+      var event_alert = function(o)
+      {
+        var x = o.clientX,
+            y = o.clientY;
+        var pickList = engine.pick(engine.canvasCoordinates(x, y));
+        if (pickList.objects.length > 0)
+        {
+          for (var p = 0; p < pickList.objects.length; p++) 
+          {
+            pickList.objects[p].userObject.highlighted = true;
+            console.log(pickList.objects[p]);
+            if (pickList.objects[p].isOnTop &&
+                  pickList.objects[p].isTerrain)
+            {
+               sprite.DrawPlacemark(image_src, pickList.objects[p].position, label, label_color);
+            }
+          }
+        }
+      }
+      engine.addEventListener("mousedown", event_alert);
+    </script>
   </body>
 </html>
