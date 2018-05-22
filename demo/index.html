@@ -32,6 +32,48 @@
 
         sprite.DrawSurefaceShape(boundary, WorldWind.Color.BLACK,
           WorldWind.Color.RED);
+      
+       var text,
+           textAttributes = new WorldWind.TextAttributes(null),
+          textLayer = new WorldWind.RenderableLayer("地块文字绘制");
+          textAttributes.color = WorldWind.Color.CYAN; 
+          textAttributes.depthTest = false;
+
+          var text_position = GetPolygonAreaCenter(boundary);
+          console.log(text_position);
+          text = new WorldWind.GeographicText(text_position,"地块文字绘制");
+          text.attributes = textAttributes;
+          textLayer.addRenderable(text);
+          engine.addLayer(textLayer);
+
+function Area(p0,p1,p2)
+{
+  var area = 0.0 ;
+  area = p0.longitude * p1.latitude + p1.longitude * p2.latitude + p2.longitude * p0.latitude - p1.longitude * p0.latitude - p2.longitude * p1.latitude - p0.longitude * p2.latitude;
+  return area / 2 ;
+}
+
+function GetPolygonAreaCenter(boundary)
+{
+  var sum_x = 0;
+  var sum_y = 0;
+  var sum_area = 0;
+  var p1 = boundary[1];
+  
+  for (var i = 2; i < boundary.length; i++) 
+  {
+    p2 = boundary[i];
+    area = Area(boundary[0], p1, p2) ;
+    sum_area += area ;
+    sum_x += (boundary[0].longitude + p1.longitude + p2.longitude) * area;
+    sum_y += (boundary[0].latitude + p1.latitude + p2.latitude) * area;
+    p1 = p2 ;
+  }
+  var longitude = sum_x / sum_area / 3;
+  var latitude = sum_y / sum_area / 3;
+  
+  return new WorldWind.Position(latitude, longitude, 0);
+}
     </script>
   </body>
 </html>
