@@ -22,8 +22,15 @@
           label_color = WorldWind.Color.YELLOW,
           position = new WorldWind.Position(24.707, 100.092, 350);
 
-      sprite.DrawPlacemark(image_src, position, label, label_color);
-      sprite.DrawPlacemarkbyClick();
+      // sprite.DrawPlacemark(image_src, position, label, label_color);
+      // sprite.DrawPlacemarkbyClick();
+
+       var boundary = [];
+        boundary.push(new WorldWind.Location(40, -100));
+        boundary.push(new WorldWind.Location(45, -110));
+        boundary.push(new WorldWind.Location(40, -120));
+
+        sprite.DrawSurefaceShape(boundary, WorldWind.Color.BLUE);
     </script>
   </body>
 </html>
