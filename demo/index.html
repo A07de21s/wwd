@@ -7,9 +7,16 @@
     <script type="text/javascript" src="../engine/worldwind.min.js" ></script>
     <script type="text/javascript" src="../lib/earth.js"></script>
     <script type="text/javascript" src="../lib/sprite.js"></script>
+    <script type="text/javascript">
+      function Refresh()
+      {
+        location.reload();
+      }
+    </script>
   </head>
   <body>
-    <canvas id="earth_canvas" width=1000 height=800>
+   <button id="target" onclick="Refresh()">Refresh</button>
+   <canvas id="earth_canvas" width=1000 height=800>
       Your browser does not support HTML5 Canvas.
     </canvas>
     <script type="text/javascript">
