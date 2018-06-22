@@ -10,7 +10,12 @@
     <script type="text/javascript">
       function Refresh()
       {
-        location.reload();
+        engine.removeall();
+        /*
+        engine.removeLayer(textLayer); 
+        engine.removeLayer(shapes_layer);
+        engine.removeLayer(placemark_layer);
+        */
       }
     </script>
   </head>
@@ -30,28 +35,111 @@
           position = new WorldWind.Position(24.707, 100.092, 350);
 
       // sprite.DrawPlacemark(image_src, position, label, label_color);
-      sprite.DrawPlacemarkbyClick();
+      DrawPlacemarkbyClick();
 
        var boundary = [];
         boundary.push(new WorldWind.Location(40, -100));
         boundary.push(new WorldWind.Location(45, -110));
         boundary.push(new WorldWind.Location(40, -120));
 
-        sprite.DrawSurefaceShape(boundary, WorldWind.Color.BLACK,
-          WorldWind.Color.RED);
+        var shapes_layer = new WorldWind.RenderableLayer("Surface Shapes");
+        this.engine.addLayer(shapes_layer);
+    
+        var attributes = new WorldWind.ShapeAttributes(null);
+        attributes.outlineColor = WorldWind.Color.BLACK;
+        attributes.interiorColor = WorldWind.Color.RED;
+    
+        var highlightAttributes = new WorldWind.ShapeAttributes(attributes);
+        highlightAttributes.interiorColor = new WorldWind.Color(1, 1, 1, 1);
+    
+        var shape = new WorldWind.SurfacePolygon(boundary, attributes);
+        shape.highlightAttributes = highlightAttributes;
+        shapes_layer.addRenderable(shape);
+    
+        var highlightController = new WorldWind.HighlightController(this.engine);
       
        var text,
            textAttributes = new WorldWind.TextAttributes(null),
-          textLayer = new WorldWind.RenderableLayer("地块文字绘制");
-          textAttributes.color = WorldWind.Color.CYAN; 
-          textAttributes.depthTest = false;
+           textLayer = new WorldWind.RenderableLayer("地块文字绘制");
+       textAttributes.color = WorldWind.Color.CYAN; 
+       textAttributes.depthTest = false;
 
-          var text_position = GetPolygonAreaCenter(boundary);
-          console.log(text_position);
-          text = new WorldWind.GeographicText(text_position,"地块文字绘制");
-          text.attributes = textAttributes;
-          textLayer.addRenderable(text);
-          engine.addLayer(textLayer);
+       var text_position = GetPolygonAreaCenter(boundary);
+       console.log(text_position);
+       text = new WorldWind.GeographicText(text_position,"地块文字绘制");
+       text.attributes = textAttributes;
+       textLayer.addRenderable(text);
+       engine.addLayer(textLayer);
+
+function DrawPlacemark(img_src, position, label, label_color)
+{
+  var placemark,
+      placemark_attributes = new WorldWind.PlacemarkAttributes(null),
+      highlight_attributes,
+      placemark_layer = new WorldWind.RenderableLayer("Placemarks");
+
+  placemark_attributes.imageScale = 1;
+  placemark_attributes.imageOffset = new WorldWind.Offset(
+      WorldWind.OFFSET_FRACTION, 0.3, WorldWind.OFFSET_FRACTION, 0.0);
+  placemark_attributes.imageColor = WorldWind.Color.WHITE; 
+  placemark_attributes.labelAttributes.offset = new WorldWind.Offset(
+      WorldWind.OFFSET_FRACTION, 0.5, WorldWind.OFFSET_FRACTION, 1.0);
+  placemark_attributes.labelAttributes.color = label_color;
+  placemark_attributes.drawLeaderLine = true;
+  placemark_attributes.leaderLineAttributes.outlineColor = WorldWind.Color.RED;
+
+  placemark = new WorldWind.Placemark(position, false, null);
+  placemark.label = label;
+  placemark.altitudeMode = WorldWind.RELATIVE_TO_GROUND;
+
+  placemark_attributes = new WorldWind.PlacemarkAttributes( placemark_attributes);
+  placemark_attributes.imageSource = image_src;
+  placemark.attributes = placemark_attributes;
+
+  highlight_attributes = new WorldWind.PlacemarkAttributes(placemark_attributes);
+  highlight_attributes.imageScale = 1.2;
+  placemark.highlightAttributes = highlight_attributes;
+
+  placemark_layer.addRenderable(placemark);
+  engine.addLayer(placemark_layer);
+  engine.deepPicking = true;
+  var highlightController = new WorldWind.HighlightController(engine);
+}
+
+function DrawPlacemarkbyClick()
+{
+  engine.addEventListener("mousedown", DrawPlacemarkEvent);
+}
+
+flag = true;
+
+function DrawPlacemarkEvent(o)
+{
+  if (o.button == 2)
+  {
+    flag = false;
+  }
+  var image_src = null;
+  var label = 0;
+  var label_color = WorldWind.Color.YELLOW;
+  var pick_list = engine.pick(engine.canvasCoordinates(
+      o.clientX, o.clientY));
+// alert(this.flag);
+  if (pick_list.objects.length > 0)
+  {
+    for (var p = 0; p < pick_list.objects.length; p++)
+    {
+      pick_list.objects[p].userObject.highlighted = true;
+      if (pick_list.objects[p].isOnTop && pick_list.objects[p].isTerrain 
+          && flag)
+      {
+        DrawPlacemark(image_src, 
+          pick_list.objects[p].position, label, label_color);
+      }
+    }
+  }
+}
+
 
 function Area(p0,p1,p2)
 {
